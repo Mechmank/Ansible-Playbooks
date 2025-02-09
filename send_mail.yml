@@ -1,0 +1,37 @@
+---
+- name: Sending mail from linux server
+  hosts: localhost
+  vars_prompt:
+    - name: from
+      prompt: Enter your mail id here
+      private: no
+
+    - name: pass
+      prompt: Enter your gmail auth here
+      private: yes
+
+    - name: to
+      prompt: Enter To mail ID here
+      private: no
+
+    - name: sub
+      prompt: Enter the mail subject here
+      private: no
+
+    - name: body
+      prompt: Enter the mail body here
+      private: no
+
+  tasks:
+    - name: Ping module
+      ping:
+
+    - name: Send mail
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: '{{ from }}'
+        password: '{{ pass }}'
+        to: '{{ to }}'
+        subject: '{{ sub }}'
+        body: '{{ body }}'
