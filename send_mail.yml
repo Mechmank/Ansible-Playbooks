@@ -1,3 +1,5 @@
+# This play book will help to send ma mail from linux servers using SMTP protocol
+
 ---
 - name: Sending mail from linux server
   hosts: localhost
