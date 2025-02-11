@@ -1,0 +1,29 @@
+---
+- name: Checking the available C drive space on destination servers
+  hosts: localhost
+  tasks:
+
+    - name: Removing old output.txt
+      file:
+        name: /root/mk/c_drive_space/output.csv
+        state: absent
+      delegate_to: localhost
+
+- gather_facts: false
+  ignore_errors: yes
+  hosts: all
+  tasks:
+    - name: Getting C drive space
+      win_shell: ([Math]::Round(((gwmi Win32_LogicalDisk -Filter "DeviceID='C:'").Freespace / 1GB), 2))
+      register: cdrive
+
+    - name: Setting facts
+      set_fact:
+        input: "{{ [inventory_hostname] }}; {{ cdrive.stdout_lines  }}"
+        filename: output
+
+    - name: Exporting outputs
+      export_out:
+        data: "{{ input }}"
+        date_string: "{{ filename }}"
+      delegate_to: localhost
