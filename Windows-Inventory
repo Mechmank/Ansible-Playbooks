@@ -1,0 +1,8 @@
+[windows]
+winhost
+
+[windows:vars]
+ansible_user=winuser
+ansible_password=winuserpassword
+ansible_connection=winrm
+ansible_shell_type=cmd
