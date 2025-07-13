@@ -1,0 +1,35 @@
+# Creating a nwe partition in sdb (Change this with the corresponding device name).
+# Attach a filesystem in a partition.
+# Create a mount point.
+# Mount the partition.
+---
+- name: Create a 2GB partition on /dev/sdb and format it with XFS
+  hosts: all
+  tasks:
+    - name: Create a new partition on /dev/sdb
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        part_type: primary
+        part_start: 0%
+        part_end: 2GiB
+        unit: GiB
+
+    - name: Format the new partition with XFS filesystem
+      filesystem:
+        fstype: xfs
+        dev: /dev/sdb1
+        force: yes
+
+    - name: Create mount point for /sales
+      file:
+        path: /sales
+        state: directory
+    - name: Mount the new partition to /sales
+      mount:
+        path: /sales
+        src: /dev/sdb1
+        fstype: xfs
+        state: mounted # adds fstab entry automatically
+        #state: absent # removes fstab entry automatically 
