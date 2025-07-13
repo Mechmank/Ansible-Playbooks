@@ -32,3 +32,7 @@
         return_content: yes
         status_code: 200
         user: "id"
+      register: download_result
+      until: download_result is succeeded
+      retries: 4
+      delay: 3 #seconds
