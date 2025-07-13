@@ -1,3 +1,4 @@
+#Follow the below steps to remove the LVM
 ---
 - name: Remove LVM created in /dev/sdb1
   hosts: all
