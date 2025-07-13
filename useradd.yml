@@ -1,4 +1,5 @@
 # User add with var file
+#Using hashed password with the salt value of "mytestsalt"
 ---
 - name: user vars_files to create multiple users
   hosts: all
