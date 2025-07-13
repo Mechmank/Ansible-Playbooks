@@ -1,0 +1,14 @@
+---
+- name: List mount points and filesystem types
+  hosts: all
+  tasks:
+    - name: Gather facts about mounted filesystems
+      setup:
+        gather_subset:
+          - mounts
+
+    - name: Display mount points and filesystem types
+      debug:
+        msg: "Mount point: {{ item.mount }}, Filesystem type: {{ item.fstype }}"
+      loop: "{{ ansible_mounts }}"
+      when: item.mount is defined and item.fstype is defined
