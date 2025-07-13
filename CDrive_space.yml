@@ -1,6 +1,6 @@
 # This playbook will help to find the available C drive space in Windows hosts
 # Enter the host in inventory file
-# Execute the script
+# Execute the script. output will be saved in output.csv file
 ---
 - name: Checking the available C drive space on destination servers
   gather_facts: false
