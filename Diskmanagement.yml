@@ -5,6 +5,7 @@
 ---
 - name: Create a 2GB partition on /dev/sdb and format it with XFS
   hosts: all
+  gather_facts: false
   tasks:
     - name: Create a new partition on /dev/sdb
       parted:
@@ -33,3 +34,11 @@
         fstype: xfs
         state: mounted # adds fstab entry automatically
         #state: absent # removes fstab entry automatically 
+    - name: Gather mount points information
+      ansible.builtin.setup:
+        gather_subset:
+          - mounts # Gather only mount points information
+    - name: Display mount points
+      debug:
+        msg: 
+          - "{{ ansible_mounts | map(attribute='mount') | list }} - {{ ansible_mounts | map(attribute='fstype') | list }}"

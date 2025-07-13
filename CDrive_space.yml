@@ -1,20 +1,9 @@
 # This playbook will help to find the available C drive space in Windows hosts
 # Enter the host in inventory file
 # Execute the script
-
-
 ---
 - name: Checking the available C drive space on destination servers
-  hosts: localhost
-  tasks:
-
-    - name: Removing old output.txt
-      file:
-        name: /root/test/c_drive_space/output.csv
-        state: absent
-      delegate_to: localhost
-
-- gather_facts: false
+  gather_facts: false
   ignore_errors: yes
   hosts: all
   tasks:
