@@ -1,0 +1,14 @@
+--------------------------------------------------------------------------------
+Inventory from      : "{{ ansible_hostname }}"
+Generated at        : "{{ansible_date_time.time}}"
+Hostname            : "{{ansible_fqdn}}"
+IPaddress           : "{{ansible_all_ipv4_addresses}}"
+OS-version          : "{{ansible_distribution}}-{{ansible_distribution_version}}"
+KernelVersion       : "{{ansible_kernel_version}}"
+ansible_system      : "{{ansible_system}}"
+OS_Family           : "{{ansible_os_family}}"
+ansible_processor   : "{{ansible_processor}}"
+RAM                 : "{{ansible_memtotal_mb}}"
+Free RAM (MB)       : "{{ ansible_memfree_mb }}"
+RAM Status          : "{% if ansible_memfree_mb|int < 1000 %}low{% else %}good{% endif %}"
+*********************************************************************************
