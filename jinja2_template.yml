@@ -4,5 +4,5 @@
   tasks:
     - name: use template
       template:
-        src: 46sysinfo.j2
+        src: template.j2
         dest: /tmp/systeminfo.txt
