@@ -1,0 +1,54 @@
+---
+- name: Remove LVM created in /dev/sdb1
+  hosts: all
+  tasks:
+    - name: Unmount /test_mount mount point
+      mount:
+        path: /test_mount
+        state: absent # unmounts the partition and removes fstab entry
+    - name: Remove mount point /test_mount
+      file: 
+        path: /test_mount
+        state: absent # removes the mount point directory
+    - name: Remove logical volume /dev/test_vg/lv1
+      lvol:
+        vg: test_vg
+        lv: lv1 
+        state: absent # removes the logical volume
+        force: yes # force remove the logical volume
+    - name: Remove logical volume /dev/test_vg/lv2
+      lvol:
+        vg: vg1
+        lv: lv2
+        state: absent # removes the logical volume  
+        force: yes # force remove the logical volume
+    - name: Remove volume group test_vg
+      lvg:
+        vg: vg1
+        state: absent # removes the volume group
+    - name: Remove physical volume /dev/sdb1
+      command: pvremove -f /dev/sdb1 # force remove the physical volume
+    - name: Remove partition /dev/sdb1
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: absent # removes the partition
+    
+    - name: Print message after removing LVM
+      debug:
+        msg: "LVM and mount point have been successfully removed."
+    - name: List remaining mount points
+      setup:
+        gather_subset:
+          - mounts
+    - name: Display remaining mount points
+      debug:
+        msg: "Remaining mount point: {{ item.mount }}, Filesystem type: {{ item.fstype }}"
+      loop: "{{ ansible_mounts }}"
+      when: item.mount is defined and item.fstype is defined
+    - name: Check if /dev/sdb is still present
+      command: lsblk /dev/sdb
+      register: lsblk_output
+    - name: Display lsblk output for /dev/sdb
+      debug:
+        msg: "{{ lsblk_output.stdout_lines }}"
