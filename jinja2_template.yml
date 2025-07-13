@@ -1,3 +1,5 @@
+#Gathering the server details of a destination file and store it in sestination server.
+#Fetch the details from destination to host servers.
 ---
 - name: create systeminfo based on j2 template and collect
   hosts: all
@@ -6,3 +8,8 @@
       template:
         src: template.j2
         dest: /tmp/systeminfo.txt
+    - name: fetch systeminfo
+      fetch:
+        src: /tmp/systeminfo.txt
+        dest: "/tmp/{{ansible_hostname}}.sysinfo.txt"
+        flat: yes

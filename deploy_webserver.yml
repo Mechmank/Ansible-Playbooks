@@ -1,3 +1,4 @@
+#Deploy web server and check its reachable
 ---
 - name: deploy httpd, start service, create HomePage
   hosts: web
