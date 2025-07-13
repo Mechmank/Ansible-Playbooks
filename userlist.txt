@@ -1,0 +1,14 @@
+# Vars file for useradd.yml
+userlist:
+    - un: r51
+      shell: /bin/bash
+      cmnt: "RubyDev1"
+      pass: Redhat
+    - un: r52
+      shell: /bin/nologin
+      cmnt: "RubyProjManager"
+      pass: Redhat
+    - un: r53
+      shell: /bin/sh
+      cmnt: "RubyArchitect"
+      pass: Redhat

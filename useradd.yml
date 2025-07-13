@@ -1,0 +1,14 @@
+# User add with var file
+---
+- name: user vars_files to create multiple users
+  hosts: all
+  vars_files:
+    - userlist.txt
+  tasks:
+    - name: create users using loop
+      user:
+        name: "{{ item.un }}"
+        shell: "{{item.shell }}"
+        comment: "{{ item.cmnt }}"
+        password: "{{ item.pass | password_hash('sha512', 'mytestsalt') }}"
+      loop: "{{ userlist }}" 
