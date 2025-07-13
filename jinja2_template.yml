@@ -1,0 +1,8 @@
+---
+- name: create systeminfo based on j2 template and collect
+  hosts: all
+  tasks:
+    - name: use template
+      template:
+        src: 46sysinfo.j2
+        dest: /tmp/systeminfo.txt
