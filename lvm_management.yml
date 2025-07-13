@@ -1,0 +1,60 @@
+# Create patition in sdb.
+# Create Physical volume amd Volume group.
+# Create logical volume.
+# Create filesystem in logical volume.
+# Create mount point.
+# Mount the logical volume.
+# Add another logical volume for 400 MB.
+---
+- name: Create LVM using /dev/sdb1
+  hosts: all
+  tasks:
+    - name: create 2gb partion on /dev/sdb
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        part_type: primary
+        part_start: 0%
+        part_end: 2GiB
+        unit: GiB
+    - name: Create physical volume on /dev/sdb1
+      lvg:
+        vg: test_vg
+        pvs: /dev/sdb1 #pvcreate included in lvg module
+        state: present
+
+    - name: Create logical volume lv1 of size 1.2G in vg1
+      lvol:
+        vg: test_vg
+        lv: lv1
+        size: 1.2G
+        state: present
+
+    - name: Format the logical volume with ext4 filesystem
+      filesystem:
+        fstype: ext4
+        dev: /dev/test_vg/lv1
+
+    - name: Create mount point for /mnt/lv1
+      file:
+        path: /test_mount
+        state: directory
+    - name: Mount the logical volume to /test_mount
+      mount:
+        path: /test_mount
+        src: /dev/test_vg/lv1
+        fstype: ext4
+        state: mounted # adds fstab entry automatically 
+    - name: Display the logical volume information
+      command: lvdisplay /dev/test_vg/lv1
+      register: lv_info 
+    - name: Print logical volume information
+      debug:
+        msg: "{{ lv_info.stdout_lines }}"
+    - name: add another logical volume lv2 of size 400MB in test_vg
+      lvol:
+        vg: test_vg
+        lv: lv2
+        size: 400M
+        state: present
