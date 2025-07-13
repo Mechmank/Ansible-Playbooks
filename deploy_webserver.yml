@@ -1,0 +1,33 @@
+---
+- name: deploy httpd, start service, create HomePage
+  hosts: web
+  tasks:
+    - name: install httpd service
+      ansible.builtin.dnf:
+        name: httpd
+        state: latest
+    - name: create default homepage content
+      ansible.builtin.copy:
+        content: "welcome to web server deployed using ansible"
+        dest: /var/www/html/index.html 
+    - name: enable and start service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+    - name: open firewall http service
+      ansible.builtin.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+- name: Check web running from master node
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Check web running
+      ansible.builtin.uri: 
+        url: http://node1.example.com
+        return_content: yes
+        status_code: 200
+        user: "id"

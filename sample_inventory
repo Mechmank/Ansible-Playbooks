@@ -1,0 +1,13 @@
+[web]
+node1.example.com
+[web:vars]
+pkg= httpd
+service= httpd
+[db]
+node2.example.com
+[db:vars]
+pkg= mariadb-server
+service= mariadb
+[mumdc:children]
+web
+db
