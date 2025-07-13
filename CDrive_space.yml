@@ -19,5 +19,5 @@
     - name: Exporting outputs
       export_out:
         data: "{{ input }}"
-        date_string: "{{ filename }}"
+        output_file: "{{ filename }}"
       delegate_to: localhost
