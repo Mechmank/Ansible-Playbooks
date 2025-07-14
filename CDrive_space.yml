@@ -1,6 +1,8 @@
 # This playbook will help to find the available C drive space in Windows hosts
 # Enter the host in inventory file
 # Execute the script. output will be saved in output.csv file
+
+#Commented lines will be used with the custome module (export_out) to save a output as csv
 ---
 - name: Checking the available C drive space on destination servers
   gather_facts: false
@@ -14,10 +16,13 @@
     - name: Setting facts
       set_fact:
         input: "{{ [inventory_hostname] }}; {{ cdrive.stdout_lines  }}"
-        filename: output
+    #     filename: output
 
-    - name: Exporting outputs
-      export_out:
-        data: "{{ input }}"
-        output_file: "{{ filename }}"
-      delegate_to: localhost
+    # - name: Exporting outputs
+    #   export_out:
+    #     data: "{{ input }}"
+    #     output_file: "{{ filename }}"
+    #   delegate_to: localhost
+    - name: Print the output
+      debug:
+        var: input
