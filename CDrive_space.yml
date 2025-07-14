@@ -4,7 +4,7 @@
 
 #Commented lines will be used with the custome module (export_out) to save a output as csv
 ---
-- name: Checking the available C drive space on destination servers
+- name: Checking the available C drive space on destination Windows servers
   gather_facts: false
   ignore_errors: yes
   hosts: all
