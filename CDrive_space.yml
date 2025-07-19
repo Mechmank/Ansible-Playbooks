@@ -10,6 +10,7 @@
       file:
         name: /tmp/output.txt
         state: absent
+      # delegate_to: localhost
 - gather_facts: false
   ignore_errors: yes
   hosts: all
