@@ -1,19 +1,16 @@
 # This playbook will help to find the available C drive space in Windows hosts
 # Enter the host in inventory file
-# Execute the script. output will be saved in output.txt file
+# Execute the script. output will be saved in the given file.
 
 ---
 - name: Checking the available C drive space on destination Windows servers
-  hosts: localhost
-  tasks:
-    - name: Remove the old output.txt file
-      file:
-        name: /tmp/output.txt
-        state: absent
-      # delegate_to: localhost
-- gather_facts: false
+  gather_facts: false
   ignore_errors: yes
   hosts: all
+  vars_prompt:
+    - name: output                          #Generate a prompt for output file name
+      prompt: Enter the output file name
+      private: false
   tasks:
     - name: Getting C drive space
       win_shell: ([Math]::Round(((gwmi Win32_LogicalDisk -Filter "DeviceID='C:'").Freespace / 1GB), 2))
@@ -21,10 +18,10 @@
     - name: Setting facts
       set_fact:
         input: "{{ [inventory_hostname] }}; {{ cdrive.stdout_lines  }}"
-    - name: Save the output as output.txt
+    - name: Save the output as /tmp/{{ output }}
       lineinfile:
         line: "{{ input }}"
-        path: /tmp/output.txt
+        path: "/tmp/{{ output }}""
         create: yes   #This will create a new file if its not exist
       delegate_to: localhost    #output will be saved in /tmp/output.txt - localhost
 
