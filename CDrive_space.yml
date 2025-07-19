@@ -21,7 +21,7 @@
     - name: Save the output as /tmp/{{ output }}
       lineinfile:
         line: "{{ input }}"
-        path: "/tmp/{{ output }}""
+        path: "/tmp/{{ output }}"
         create: yes   #This will create a new file if its not exist
       delegate_to: localhost    #output will be saved in /tmp/output.txt - localhost
 
