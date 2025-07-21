@@ -1,21 +1,40 @@
 #Deploy web server and check its reachable
 ---
-- name: deploy httpd, start service, create HomePage
-  hosts: web
+- name: Configure the web servers
+  hosts: all
   tasks:
-    - name: install httpd service
-      ansible.builtin.dnf:
+    - name: Install the Apache on 'apache' group servers
+      package:
         name: httpd
-        state: latest
-    - name: create default homepage content
-      ansible.builtin.copy:
-        content: "welcome to web server deployed using ansible"
-        dest: /var/www/html/index.html 
-    - name: enable and start service
-      ansible.builtin.service:
+        state: present
+      when: "'apache' in group_names"
+    - name: Install the Nginx on 'nginx' group servers
+      package:
+        name: nginx
+        state: present
+      when: "'nginx' in group_names"
+    - name: Start and Enable the apache service
+      service:
         name: httpd
         state: started
         enabled: true
+      when: "'apache' in group_names"
+    - name: Start and Enable the nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: true
+      when: "'nginx' in group_names"
+    - name: Create index.html for apache
+      template:
+        src: index.html.j2
+        dest: /var/www/html/index.html
+      when: "'apache' in group_names"
+    - name: Create index.html for nginx
+      template:
+        src: index.html.j2
+        dest: /usr/share/nginx/html/index.html
+      when: "'nginx' in group_names"
     - name: open firewall http service
       ansible.builtin.firewalld:
         service: http
