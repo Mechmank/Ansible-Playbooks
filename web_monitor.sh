@@ -18,5 +18,5 @@ if ! systemctl is-active --quiet $service; then
     systemctl start  $service
     echo "$(date) : $service was down" >> /var/log/web_service_monitor.log
 else
-    echo "$(date) : $service is running fine"
+    echo "$(date) : $service is running fine" >> /var/log/web_service_monitor.log
 fi
