@@ -1,0 +1,17 @@
+# This will be helpful to monitor the status and restart the web services if dow.
+# Using web_monitor.sh shell script we're monitoring the services status and aintain the seervices up and running fine.
+# Logs will be created with the status of we services in /var/log/web_service_monitor.log
+---
+- name: Monitor web services
+  hosts: all
+  tasks:
+    - name: Copy the web_monitor.sh to all the servers
+      copy:
+        src: web_service.sh
+        dest: /home/student/web_monitor.sh
+        mode: 0775
+    - name: Schedule a cron job for contineous monitoring
+      cron:
+        - name: Monitor web services
+          minute: *
+          job: /home/student/web_monitor.sh
