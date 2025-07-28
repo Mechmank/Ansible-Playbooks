@@ -12,6 +12,6 @@
         mode: 0775
     - name: Schedule a cron job for contineous monitoring
       cron:
-        - name: Monitor web services
-          minute: *
-          job: /home/student/web_monitor.sh
+        name: Monitor web services
+        minute: *
+        job: /home/student/web_monitor.sh
