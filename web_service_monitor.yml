@@ -7,11 +7,11 @@
   tasks:
     - name: Copy the web_monitor.sh to all the servers
       copy:
-        src: web_service.sh
+        src: web_monitor.sh
         dest: /home/student/web_monitor.sh
-        mode: 0775
+        mode: 0755
     - name: Schedule a cron job for contineous monitoring
       cron:
         name: Monitor web services
-        minute: *
+        minute: "*"
         job: /home/student/web_monitor.sh
