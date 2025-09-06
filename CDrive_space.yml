@@ -11,13 +11,16 @@
     - name: output                          #Generate a prompt for output file name
       prompt: Enter the output file name
       private: false
+      
   tasks:
     - name: Getting C drive space
       win_shell: ([Math]::Round(((gwmi Win32_LogicalDisk -Filter "DeviceID='C:'").Freespace / 1GB), 2))
       register: cdrive
+
     - name: Setting facts
       set_fact:
         input: "{{ [inventory_hostname] }}; {{ cdrive.stdout_lines  }}"
+
     - name: Save the output as /tmp/{{ output }}
       lineinfile:
         line: "{{ input }}"
