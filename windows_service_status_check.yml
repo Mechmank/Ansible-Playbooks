@@ -2,20 +2,20 @@
 # Service name is necessory to list the status
 # Host servers should be in a Windows-Inventory
 
-- name: Check and start Windows Update service if stopped
+- name: Check the status of services in windows server
   hosts: all
   gather_facts: no
   ignore_errors: yes
   vars_prompt:
     - name: service
-      prompt: Enter the service name tocheck the status
+      prompt: Enter the service name to check the status
       private: false
     - name: output
       prompt: Enter the file name to save the output
       private: false
 
   tasks:
-    - name: Get Windows Update service status
+    - name: Get the service status
       win_service:
         name: "{{ service }}"
       register: update_service
