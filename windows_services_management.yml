@@ -1,0 +1,34 @@
+# Manage services in windows server (to check status, start, stop, restart, enable, disable)
+# Check configuration in ansible.cfg
+# use the Windows-Inventory as inventory
+---
+- name: Maganging the windows services
+  hosts: all
+  ignore_errors: yes
+  gather_facts: false
+  vars_prompt:
+    - name: output_file
+      prompt: Enter the output file name
+      private: no
+    - name: service
+      prompt: Enter the service name to check the status
+      private: no
+
+  tasks:
+    - name: Check connectivity
+      win_ping:
+
+    - name: Checking the status of {{ service }} service
+      win_service:
+        name: "{{ service }}"
+        state: started # Avalable options started / stopped / restarted / present / absent
+        start_mode: auto # Available options auto / manual / disabled 
+        path: "C:\\Program Files\\MyApp\\myapp.exe" # Need to add if adding a new service
+      register: result
+
+    - name: Saving the output file in {{ output_file }}
+      lineinfile:
+        line: "{{ inventory_hostname }} ; Service Name: {{ result.display_name }} ; status: {{ result.state }} ; mode: {{ result.start_mode }}"
+        path: "{{ output_file }}"
+        create: yes
+      delegate_to: localhost

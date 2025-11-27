@@ -1,8 +1,11 @@
 [windows]
-winhost
+<winhost>
 
 [windows:vars]
-ansible_user=winuser
-ansible_password=winuserpassword
+ansible_user=<winuser>
+ansible_password=<winuserpassword>
 ansible_connection=winrm
-ansible_shell_type=cmd
+ansible_port=5985
+ansible_winrm_transport=ntlm
+ansible_winrm_message_encryption=always
+ansible_winrm_server_cert_validation=ignore
