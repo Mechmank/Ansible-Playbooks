@@ -1,0 +1,32 @@
+# This playbook used to check whether the specific applications available or not, print the version if needed.
+# Change the application name in the command "java -version" if need to check any other application
+# This is to check an application. If need to check athe service check "windows_services_management.yml"
+# Use "Windows-Inventory" as inventory file
+---
+- name: Checking the JAVA application in windows servers
+  hosts: all
+  gather_facts: false
+  ignore_errors: yes
+  tasks:
+
+    - name: Checking the ping status
+      win_ping:
+    - name: Checking the application version
+      win_command: "java -version"
+      register: result
+    - set_fact:
+        output: present
+      when: result.rc == 0
+    - set_fact:
+        output: absent
+      when: result.rc != 0
+    - name: Display the output
+      debug:
+        msg: "{{ output }}"
+      # msg: "{{ result.stderr_lines[0] }}" will print the vesion if the JAVA availabe in the servers. [0] means the frst line
+    - name: Print the output in the file in local host
+      lineinfile:
+        line: "{{ inventory_hostname }} ; {{ output }}"
+        path: #Path to save a file in a local host
+        create: yes
+      delegate_to: localhost    # This make the outputs to print in a localhost

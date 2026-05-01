@@ -1,5 +1,5 @@
 [windows]
-<winhost>
+<winhosts>
 
 [windows:vars]
 ansible_user=<winuser>

@@ -21,7 +21,7 @@
     - name: Checking the status of {{ service }} service
       win_service:
         name: "{{ service }}"
-        state: started # Avalable options started / stopped / restarted / present / absent
+        state: started # Available options started / stopped / restarted / present / absent
         start_mode: auto # Available options auto / manual / disabled 
         path: "C:\\Program Files\\MyApp\\myapp.exe" # Need to add if adding a new service
       register: result
