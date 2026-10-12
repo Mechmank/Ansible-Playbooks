@@ -23,3 +23,26 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+=======================================================================================================
+
+# How to use
+
+---
+- name: OS_version identifier
+  hosts: all
+  tasks:
+    - name: Setting facts
+      set_fact:
+        details:
+          - "{{ inventory_hostname }}"
+          - "{{ ansible_facts['hostname'] }}"
+          - "{{ ansible_facts['os_family'] }}"
+
+    - name: Exporting output
+      export_out:
+        input: "{{ details }}"
+        output: output
+      delegate_to: localhost
