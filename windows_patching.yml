@@ -5,28 +5,37 @@
   serial: 1                      # one server at a time
   tasks:
 
-    - name: Ping check
-      ansible.windows.win_ping:
-
-    - name: Make sure the Windows Update service is not disabled
-      ansible.windows.win_service:
+    - name: Start Windows Update service
+      win_service:
         name: wuauserv
         start_mode: manual
         state: started
 
     - name: Install all available updates
-      ansible.windows.win_updates:
-        category_names: "*"                    # all categories
-        server_selection: windows_update       # use Windows Update directly, not WSUS
+      win_updates:
+        category_names: "*"
+        server_selection: windows_update
         state: installed
         reboot: true
         reboot_timeout: 3600
-        log_path: C:\Temp\win_updates.log
       register: patch_result
+      
+    - name: Stop the Windows Update service
+      win_service:
+        name: wuauserv
+        start_mode: disabled
+        state: stopped
 
-    - name: Patch summary
-      ansible.builtin.debug:
-        msg: >-
-          {{ inventory_hostname }} : {{ patch_result.installed_update_count }} installed,
-          {{ patch_result.failed_update_count }} failed,
-          reboot required: {{ patch_result.reboot_required }}
+    - name: Build output row
+      set_fact:
+        details:
+          - "{{ inventory_hostname }}"
+          - "{{ patch_result.installed_update_count }}"
+          - "{{ patch_result.failed_update_count }}"
+          - "{{ patch_result.reboot_required }}"
+
+    - name: Exporting output
+      export_out:
+        input: "{{ details }}"
+        output: windows_patch
+      delegate_to: localhost
