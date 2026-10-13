@@ -31,7 +31,13 @@
       shell: |
         df -hP -x tmpfs -x devtmpfs -x squashfs -x iso9660 -x overlay | \
         awk 'NR>1 {gsub("%","",$5); if ((100-$5) < 10) print $6"("$5"%used)"}'
-      register: low_mounts
+      register: low_mounts    
+      
+    # ---------- Kernel version ----------
+      
+   - name: Kernel version
+     command: uname -r
+     register: kernel_out   
 
     # ---------- Build the row ----------
     - name: Build output row
@@ -40,6 +46,7 @@
           - "{{ ansible_facts['hostname'] }}"
           - "{{ rhel_updates.stdout | default(apt_updates.stdout | default('n/a')) }}"
           - "{{ uptime_out.stdout }}"
+          - "{{ kernel_out.stdout }}"
           - "{{ low_mounts.stdout_lines | join(' ') if low_mounts.stdout_lines else 'OK' }}"
 
     - name: Exporting output
