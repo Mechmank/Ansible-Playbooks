@@ -1,0 +1,43 @@
+---
+- name: Linux patching
+  hosts: all
+  become: true
+  serial: 5
+  tasks:
+    - name: Update all packages (RHEL family)
+      dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Update all packages (Ubuntu/Debian)
+      apt:
+        update_cache: true
+        upgrade: dist
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Reboot server
+      ansible.builtin.reboot:
+        reboot_timeout: 900
+
+    - name: Check uptime
+      command: uptime -p
+      register: uptime_out
+
+    - name: Kernel after update
+      command: uname -r
+      register: kernel_after
+
+    - name: Build output row
+      set_fact:
+        details:
+          - "{{ inventory_hostname }}"
+          - "{{ uptime_out.stdout }}"
+          - "{{ kernel_after.stdout }}"
+
+    - name: Exporting output         # External module
+      export_out:
+        input: "{{ details }}"
+        output: output
+      delegate_to: localhost
