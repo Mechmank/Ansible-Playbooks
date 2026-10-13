@@ -35,10 +35,10 @@
       
     # ---------- Kernel version ----------
       
-   - name: Kernel version
-     command: uname -r
-     register: kernel_out   
-
+    - name: Kernel version
+      command: uname -r
+      register: kernel_out   
+ 
     # ---------- Build the row ----------
     - name: Build output row
       set_fact:
