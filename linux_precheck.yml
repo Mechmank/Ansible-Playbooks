@@ -6,36 +6,36 @@
   tasks:
     # ---------- Available updates count ----------
     - name: Updates count (RHEL family)
-      ansible.builtin.shell: |
+      shell: |
         yum check-update | wc -l
       register: rhel_updates
       when: ansible_facts['os_family'] == "RedHat"
 
     - name: Refresh apt cache (Ubuntu/Debian)
-      ansible.builtin.apt:
+      apt:
         update_cache: true
       when: ansible_facts['os_family'] == "Debian"
 
     - name: Updates count (Ubuntu/Debian)
-      ansible.builtin.shell: apt list --upgradable | wc -l
+      shell: apt list --upgradable | wc -l
       register: apt_updates
       when: ansible_facts['os_family'] == "Debian"
 
     # ---------- Uptime ----------
     - name: Uptime
-      ansible.builtin.command: uptime -p
+      command: uptime -p
       register: uptime_out
 
     # ---------- Mounts with less than 10% free ----------
     - name: Mounts with less than 10% free space
-      ansible.builtin.shell: |
+      shell: |
         df -hP -x tmpfs -x devtmpfs -x squashfs -x iso9660 -x overlay | \
         awk 'NR>1 {gsub("%","",$5); if ((100-$5) < 10) print $6"("$5"%used)"}'
       register: low_mounts
 
     # ---------- Build the row ----------
     - name: Build output row
-      ansible.builtin.set_fact:
+      set_fact:
         details:
           - "{{ ansible_facts['hostname'] }}"
           - "{{ rhel_updates.stdout | default(apt_updates.stdout | default('n/a')) }}"
