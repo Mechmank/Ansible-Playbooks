@@ -1,17 +1,25 @@
 ---
 - name: Disk space check
   hosts: all
-  ignore_errors: yes
+  gather_facts: false
   tasks:
 
-    - name: Get mount, available space and used %
+    - name: Remove the old output file (once)
+      file:
+        path: /root/ansible/outputs/disk_space.csv
+        state: absent
+      delegate_to: localhost
+      run_once: true
+
+    - name: Get used % of all mounts in one line
       shell: |
-        df -hP -x tmpfs -x devtmpfs -x squashfs -x iso9660 -x overlay | awk 'NR>1 {print $6"|"$4"|"$5}'
+        df -hP -x tmpfs -x devtmpfs -x squashfs -x iso9660 -x overlay | awk 'NR>1 {s = s (s ? ", " : "") $6 "=" $5} END {print s}'
       register: df_out
 
-    - name: Exporting output to disk_space.csv
+    - name: Exporting output (one row per host)
       export_out:
-        input: "{{ [inventory_hostname] + item.split('|') }}"
+        input:
+          - "{{ inventory_hostname }}"
+          - "{{ df_out.stdout }}"
         output: disk_space
-      loop: "{{ df_out.stdout_lines }}"
       delegate_to: localhost
