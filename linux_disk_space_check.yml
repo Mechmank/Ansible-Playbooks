@@ -1,0 +1,17 @@
+---
+- name: Disk space check
+  hosts: all
+  ignore_errors: yes
+  tasks:
+
+    - name: Get mount, available space and used %
+      shell: |
+        df -hP -x tmpfs -x devtmpfs -x squashfs -x iso9660 -x overlay | awk 'NR>1 {print $6"|"$4"|"$5}'
+      register: df_out
+
+    - name: Exporting output to disk_space.csv
+      export_out:
+        input: "{{ [inventory_hostname] + item.split('|') }}"
+        output: disk_space
+      loop: "{{ df_out.stdout_lines }}"
+      delegate_to: localhost
