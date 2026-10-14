@@ -1,0 +1,24 @@
+---
+- name: Checking the last 50 login logs
+  hosts: all
+  ignore_errors: yes
+  tasks:
+    - name: Last 50 SSH login entries (RHEL family)
+      shell: grep -E "sshd.*(Accepted|Failed)" /var/log/secure | tail -50
+      register: centos_log
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Last 50 SSH login entries (Ubuntu/Debian)
+      shell: grep -E "sshd.*(Accepted|Failed)" /var/log/auth.log | tail -50
+      register: ubuntu_log
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Setting output facts
+      set_fact:
+        details:
+          - "{{ inventory_hostname }}"
+          - "{{ centos_log.stdout | default(ubuntu_log.stdout | default('no log found')) }}"
+
+    - name: Print the outputs
+      ansible.builtin.debug:
+        msg: "{{ (centos_log.stdout_lines | default(ubuntu_log.stdout_lines | default([]))) }}"
