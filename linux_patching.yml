@@ -2,8 +2,14 @@
 - name: Linux patching
   hosts: all
   become: true
-  serial: 5
+  ignore_errors: yes
   tasks:
+    - name: Remove the old output file (once)
+      file:
+        path: /root/ansible/outputs/patching_output.csv
+        state: absent
+      delegate_to: localhost
+
     - name: Update all packages (RHEL family)
       dnf:
         name: "*"
@@ -17,10 +23,34 @@
         upgrade: dist
       when: ansible_facts['os_family'] == "Debian"
 
-    - name: Reboot server
-      ansible.builtin.reboot:
-        reboot_timeout: 900
+    # - name: Reboot server
+    #   ansible.builtin.reboot:
+    #     reboot_timeout: 900
 
+    # ---------- Reboot needed? ----------
+    - name: Check reboot-required flag (Ubuntu/Debian)
+      stat:
+        path: /var/run/reboot-required
+      register: deb_flag
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Check newest installed kernel vs running kernel (RHEL family)
+      shell: |
+        running=$(uname -r)
+        latest=$(rpm -q kernel --last | head -1 | awk '{print $1}' | sed 's/^kernel-//')
+        if [ "$running" != "$latest" ]; then echo YES; else echo NO; fi
+      register: rhel_flag
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Work out reboot needed
+      set_fact:
+        reboot_needed: >-
+          {{ 'YES' if (
+               (ansible_facts['os_family'] == 'Debian' and deb_flag.stat.exists | default(false))
+               or (ansible_facts['os_family'] == 'RedHat' and rhel_flag.stdout | default('NO') == 'YES')
+             ) else 'NO' }}
+
+    # ---------- Report ----------
     - name: Check uptime
       command: uptime -p
       register: uptime_out
@@ -35,9 +65,10 @@
           - "{{ inventory_hostname }}"
           - "{{ uptime_out.stdout }}"
           - "{{ kernel_after.stdout }}"
+          - "{{ reboot_needed }}"
 
-    - name: Exporting output         # External module
+    - name: Exporting output /root/ansible/outputs/patching_output.csv
       export_out:
         input: "{{ details }}"
-        output: output
+        output: patching_output
       delegate_to: localhost
