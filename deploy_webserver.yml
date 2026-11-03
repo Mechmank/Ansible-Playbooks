@@ -36,7 +36,7 @@
         dest: /usr/share/nginx/html/index.html
       when: "'nginx' in group_names"
     - name: open firewall http service
-      ansible.builtin.firewalld:
+      firewalld:
         service: http
         permanent: true
         state: enabled
@@ -46,7 +46,7 @@
   become: false
   tasks:
     - name: Check web running
-      ansible.builtin.uri: 
+      uri: 
         url: http://node1.example.com
         return_content: yes
         status_code: 200
